@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>👥 User Management</h3>
+        <span class="badge bg-primary fs-6">Admin Only</span>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Current Role</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td><strong>{{ u.id }}</strong></td>
+                            <td>{{ u.name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if u.role == 'ADMIN' %}
+                                <span class="badge bg-danger">{{ u.role }}</span>
+                                {% elif u.role == 'AGENT' %}
+                                <span class="badge bg-primary">{{ u.role }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ u.role }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('user_change_role', user_id=u.id) }}" 
+                                      class="d-flex align-items-center gap-2">
+                                    <select name="role" class="form-select form-select-sm" style="width: auto;">
+                                        <option value="USER" {% if u.role == "USER" %}selected{% endif %}>USER</option>
+                                        <option value="AGENT" {% if u.role == "AGENT" %}selected{% endif %}>AGENT</option>
+                                        <option value="ADMIN" {% if u.role == "ADMIN" %}selected{% endif %}>ADMIN</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-info mt-4">
+        <strong>ℹ️ Role Descriptions:</strong>
+        <ul class="mb-0 mt-2">
+            <li><strong>USER:</strong> Can create and view their own tickets</li>
+            <li><strong>AGENT:</strong> Can view assigned tickets and update status</li>
+            <li><strong>ADMIN:</strong> Full access to all features and user management</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

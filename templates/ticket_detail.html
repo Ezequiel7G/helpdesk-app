@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>🎫 Ticket #{{ ticket.id }}</h3>
+        <a href="{{ url_for('tickets_list') }}" class="btn btn-secondary">← Back to List</a>
+    </div>
+    
+    <!-- Ticket Details Card -->
+    <div class="card mb-3 shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ ticket.title }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Status:</strong>
+                    {% if ticket.status == 'OPEN' %}
+                    <span class="badge bg-warning text-dark fs-6">{{ ticket.status }}</span>
+                    {% elif ticket.status == 'IN_PROGRESS' %}
+                    <span class="badge bg-info fs-6">{{ ticket.status }}</span>
+                    {% else %}
+                    <span class="badge bg-success fs-6">{{ ticket.status }}</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <strong>Priority:</strong>
+                    {% if ticket.priority == 'HIGH' %}
+                    <span class="badge bg-danger fs-6">{{ ticket.priority }}</span>
+                    {% elif ticket.priority == 'MEDIUM' %}
+                    <span class="badge bg-warning text-dark fs-6">{{ ticket.priority }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary fs-6">{{ ticket.priority }}</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <strong>Created by:</strong><br>
+                    {{ ticket.created_by_name }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Assigned to:</strong><br>
+                    {{ ticket.assigned_to_name or "Unassigned" }}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="mb-3">
+                <strong>Description:</strong>
+                <p class="mt-2 p-3 bg-light rounded">{{ ticket.description }}</p>
+            </div>
+            
+            <div class="text-muted small">
+                <strong>Created:</strong> {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }} | 
+                <strong>Updated:</strong> {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Form (Admin/Agent only) -->
+    {% if session.get("user_role") in ["ADMIN", "AGENT"] %}
+    <div class="card mb-3 shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">⚙️ Update Ticket</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('ticket_update', ticket_id=ticket.id) }}">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="form-label"><strong>Status</strong></label>
+                        <select name="status" class="form-select">
+                            <option value="OPEN" {% if ticket.status == "OPEN" %}selected{% endif %}>OPEN</option>
+                            <option value="IN_PROGRESS" {% if ticket.status == "IN_PROGRESS" %}selected{% endif %}>IN_PROGRESS</option>
+                            <option value="RESOLVED" {% if ticket.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label"><strong>Assign to Agent</strong></label>
+                        <select name="assigned_to" class="form-select">
+                            <option value="">Unassigned</option>
+                            {% for a in agents %}
+                            <option value="{{ a.id }}" {% if ticket.assigned_to == a.id %}selected{% endif %}>
+                                {{ a.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Comments Section -->
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">💬 Comments ({{ comments|length }})</h5>
+        </div>
+        <div class="card-body">
+            {% if comments %}
+            <ul class="list-group mb-3">
+                {% for c in comments %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <strong class="text-primary">{{ c.user_name }}</strong>
+                        <small class="text-muted">{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <p class="mb-0">{{ c.comment }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="alert alert-secondary">
+                <em>No comments yet. Be the first to add one!</em>
+            </div>
+            {% endif %}
+            
+            <!-- Add Comment Form -->
+            <form method="post" action="{{ url_for('comment_add', ticket_id=ticket.id) }}" id="commentForm">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Add a Comment</strong></label>
+                    <textarea name="comment" id="commentText" class="form-control" rows="3" 
+                              placeholder="Type your message here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">
+                    <strong>Add Comment</strong>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4">Help Desk Login</h3>
+                    <form method="post" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input id="email" name="email" type="email" class="form-control" 
+                                   placeholder="your@email.com" required autofocus />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" name="password" type="password" 
+                                   class="form-control" placeholder="Enter password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                            <strong>Login</strong>
+                        </button>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center text-muted small">
+                        <p><strong>Test Credentials:</strong></p>
+                        <p>Admin: admin@example.com / admin123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

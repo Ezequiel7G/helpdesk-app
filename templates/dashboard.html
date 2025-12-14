@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Welcome, {{ session.get("user_name") }}!</h2>
+    
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Tickets</h5>
+                    <h2 class="display-4">{{ total_tickets }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        {% for status_row in status_counts %}
+        <div class="col-md-4 mb-3">
+            <div class="card 
+                {% if status_row.status == 'OPEN' %}bg-warning
+                {% elif status_row.status == 'IN_PROGRESS' %}bg-info
+                {% else %}bg-success{% endif %} text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ status_row.status }}</h5>
+                    <h2 class="display-4">{{ status_row.count }}</h2>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('ticket_new') }}" class="btn btn-success btn-lg w-100 mb-2">
+                        ➕ Create New Ticket
+                    </a>
+                    <a href="{{ url_for('tickets_list') }}" class="btn btn-primary btn-lg w-100">
+                        📋 View All Tickets
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Your Role: {{ session.get("user_role") }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if session.get("user_role") == "ADMIN" %}
+                    <p><strong>Administrator</strong> - You have full access to:</p>
+                    <ul>
+                        <li>View all tickets</li>
+                        <li>Manage users and roles</li>
+                        <li>Assign tickets to agents</li>
+                        <li>Update ticket status</li>
+                    </ul>
+                    {% elif session.get("user_role") == "AGENT" %}
+                    <p><strong>Support Agent</strong> - You can:</p>
+                    <ul>
+                        <li>View assigned tickets</li>
+                        <li>Update ticket status</li>
+                        <li>Add comments to tickets</li>
+                        <li>Help resolve issues</li>
+                    </ul>
+                    {% else %}
+                    <p><strong>User</strong> - You can:</p>
+                    <ul>
+                        <li>Create support tickets</li>
+                        <li>View your tickets</li>
+                        <li>Add comments</li>
+                        <li>Track progress</li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
