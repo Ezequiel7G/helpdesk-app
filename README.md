@@ -25,17 +25,20 @@ Sistema web de gestión de tickets de soporte técnico que permite a los usuario
 ## 🛠️ Tecnologías Utilizadas
 
 ### Backend
+
 - **Flask** - Framework web Python
 - **PyMySQL** - Conector base de datos
 - **Werkzeug** - Hashing de contraseñas
 - **Python-dotenv** - Gestión de variables de entorno
 
 ### Frontend
+
 - **Bootstrap 5.3.3** - Framework CSS
 - **jQuery 3.7.1** - Biblioteca JavaScript
 - **Jinja2** - Motor de templates
 
 ### Base de Datos
+
 - **MariaDB 10.x** - Sistema de gestión de bases de datos
 
 ## 📁 Estructura del Proyecto
@@ -151,34 +154,42 @@ Abrir navegador en: **http://localhost:5000**
 ## 📸 Capturas de Pantalla
 
 ### Login
+
 ![Login](docs/screenshots/login.png)
 
 ### Dashboard
+
 ![Dashboard](docs/screenshots/dashboard.png)
 
 ### Lista de Tickets
+
 ![Tickets](docs/screenshots/tickets_list.png)
 
 ### Detalle de Ticket
+
 ![Detalle](docs/screenshots/ticket_detail.png)
 
 ### Gestión de Usuarios (Admin)
+
 ![Usuarios](docs/screenshots/users_list.png)
 
 ## 👥 Roles y Permisos
 
 ### 👤 USER (Usuario)
+
 - Crear tickets de soporte
 - Ver sus propios tickets
 - Agregar comentarios
 
 ### 🛠️ AGENT (Agente)
+
 - Ver tickets asignados
 - Actualizar estado de tickets
 - Asignar tickets
 - Agregar comentarios
 
 ### 👑 ADMIN (Administrador)
+
 - Acceso completo al sistema
 - Gestionar usuarios y roles
 - Ver todos los tickets
@@ -229,7 +240,7 @@ gunicorn -w 4 -b 0.0.0.0:8000 app:app
 server {
     listen 80;
     server_name tu-dominio.com;
-    
+
     location / {
         proxy_pass http://localhost:8000;
         proxy_set_header Host $host;
@@ -252,48 +263,3 @@ Ver más detalles en el [Manual Técnico](docs/manual_tecnico.md).
 - [ ] Autenticación de dos factores (2FA)
 - [ ] Sistema de SLA
 - [ ] Base de conocimientos
-
-## 🤝 Contribución
-
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 👨‍💻 Autor
-
-**[Tu Nombre]**
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- Email: tu-email@example.com
-
-## 🙏 Agradecimientos
-
-- Bootstrap por el framework CSS
-- Flask por el excelente framework web
-- jQuery por simplificar JavaScript
-- La comunidad open source
-
----
-
-**⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!**
-
----
-
-### 📞 Soporte
-
-Si tienes problemas o preguntas:
-1. Revisa la [documentación](docs/)
-2. Busca en [Issues](https://github.com/tu-usuario/helpdesk-app/issues)
-3. Crea un nuevo Issue si no encuentras solución
-
----
-
-**Versión:** 1.0  
-**Última actualización:** Diciembre 2024
