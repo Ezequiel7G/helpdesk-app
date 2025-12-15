@@ -9,7 +9,6 @@
 5. [Estructura del Proyecto](#estructura-del-proyecto)
 6. [Endpoints y Rutas](#endpoints-y-rutas)
 7. [Seguridad](#seguridad)
-8. [Mejoras Futuras](#mejoras-futuras)
 
 ---
 
@@ -495,200 +494,43 @@ DB_PASSWORD=password_seguro
 DB_NAME=helpdesk_db
 ```
 
----
+## ✨ Mejora Adicional Implementada
 
-## Mejoras Futuras
+### 🔍 Buscador de Tickets
 
-### Corto Plazo
+Se implementó un sistema de búsqueda que permite a los usuarios encontrar tickets rápidamente:
 
-1. **Sistema de notificaciones por email**
+**Características:**
 
-   - Notificar cuando se asigna un ticket
-   - Notificar cuando se agrega un comentario
-   - Usar Flask-Mail o SMTP
+- Búsqueda por título o descripción del ticket
+- Búsqueda en tiempo real
+- Respeta los permisos de cada rol (Admin ve todos, Agent solo asignados, User solo propios)
+- Interfaz intuitiva con campo de búsqueda visible
+- Mensaje cuando no hay resultados
+- Opción para limpiar la búsqueda
 
-2. **Búsqueda y filtros avanzados**
+**Implementación técnica:**
 
-   - Buscar por palabra clave
-   - Filtrar por estado, prioridad, fecha
-   - Ordenamiento personalizado
+- Consultas SQL con operador `LIKE` para búsqueda parcial
+- Parámetros seguros para prevenir SQL injection
+- Compatible con los 3 roles del sistema
 
-3. **Paginación de tickets**
+![Buscador de Tickets](docs/screenshots/ticket_list_search.png)
 
-   - Limitar resultados por página
-   - Mejorar rendimiento con muchos tickets
-
-4. **Exportar reportes**
-   - Generar PDF de tickets
-   - Exportar a Excel/CSV
-   - Estadísticas detalladas
-
-### Mediano Plazo
-
-5. **Sistema de archivos adjuntos**
-
-   - Permitir subir imágenes/documentos
-   - Almacenar en servidor o cloud (AWS S3)
-
-6. **Chat en tiempo real**
-
-   - Implementar WebSockets (Flask-SocketIO)
-   - Chat instantáneo en tickets
-
-7. **API RESTful**
-
-   - Endpoints JSON para integración
-   - Autenticación con JWT tokens
-   - Documentación con Swagger
-
-8. **Dashboard con gráficos**
-   - Gráficos de tickets por estado
-   - Tendencias temporales
-   - Usar Chart.js o Plotly
-
-### Largo Plazo
-
-9. **Autenticación de dos factores (2FA)**
-
-   - Mayor seguridad para admin
-   - Usar Google Authenticator
-
-10. **Sistema de SLA (Service Level Agreement)**
-
-    - Tiempos de respuesta por prioridad
-    - Alertas de tickets vencidos
-
-11. **Base de conocimientos**
-
-    - Wiki con soluciones comunes
-    - Búsqueda de artículos de ayuda
-
-12. **Integración con herramientas externas**
-    - Slack/Teams para notificaciones
-    - Jira para sincronización
-    - GitHub para issues
-
----
-
-## Resolución de Problemas
-
-### Error: "Can't connect to MySQL server"
-
-**Solución:**
-
-1. Verificar que MariaDB esté ejecutándose:
-
-```bash
-# Windows
-net start MySQL
-
-# Linux/Mac
-sudo systemctl start mariadb
 ```
 
-2. Verificar credenciales en `.env`
 
-3. Verificar firewall/permisos
-
-### Error: "ImportError: No module named 'flask'"
-
-**Solución:**
-
-```bash
-# Verificar que el entorno virtual esté activado
-source venv/bin/activate  # Mac/Linux
-venv\Scripts\activate     # Windows
-
-# Reinstalar dependencias
-pip install -r requirements.txt
 ```
-
-### Error: "werkzeug.routing.BuildError"
-
-**Solución:**
-
-- Verificar que el nombre de la ruta coincida con `url_for('nombre_ruta')`
-- Verificar que todos los templates existan
-
-### La sesión no persiste entre peticiones
-
-**Solución:**
-
-- Verificar que `SECRET_KEY` esté configurado
-- Verificar que las cookies estén habilitadas en el navegador
-
----
-
-## Testing
-
-### Tests Básicos Recomendados
-
-```python
-# test_app.py
-import unittest
-from app import app
-
-class TestHelpDesk(unittest.TestCase):
-
-    def setUp(self):
-        self.app = app.test_client()
-        self.app.testing = True
-
-    def test_login_page(self):
-        response = self.app.get('/login')
-        self.assertEqual(response.status_code, 200)
-
-    def test_dashboard_redirect_when_not_logged_in(self):
-        response = self.app.get('/dashboard')
-        self.assertEqual(response.status_code, 302)  # Redirect
-
-if __name__ == '__main__':
-    unittest.main()
-```
-
-**Ejecutar tests:**
-
-```bash
-python -m unittest test_app.py
-```
-
----
-
-## Contribución
-
-### Flujo de Trabajo Git
-
-```bash
-# Crear nueva rama para feature
-git checkout -b feature/nueva-funcionalidad
-
-# Hacer commits descriptivos
-git commit -m "feat: agregar búsqueda de tickets"
-
-# Hacer push
-git push origin feature/nueva-funcionalidad
-
-# Crear Pull Request en GitHub
-```
-
-### Convenciones de Código
-
-- Seguir **PEP 8** para Python
-- Usar nombres descriptivos para variables y funciones
-- Comentar código complejo
-- Mantener funciones pequeñas y enfocadas
-
----
 
 ## Contacto y Soporte
 
-- **Repositorio GitHub:** https://github.com/tu-usuario/helpdesk-app
+- **Repositorio GitHub:** https://github.com/Ezequiel7G/helpdesk-app
 - **Documentación:** Ver carpeta `docs/`
 - **Issues:** Reportar en GitHub Issues
 
 ---
 
 **Versión del Sistema:** 1.0  
-**Fecha de Última Actualización:** Diciembre 2024  
-**Autor:** [Tu Nombre]  
+**Fecha de Última Actualización:** Diciembre 2025
+**Autor:** Ezequiel Gerena
 **Licencia:** MIT

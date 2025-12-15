@@ -218,48 +218,6 @@ Ver diagrama completo en: `docs/er_diagram.png`
 - ✅ Control de acceso basado en roles
 - ✅ Variables de entorno para credenciales sensibles
 
-## 🧪 Testing
-
-```bash
-# Ejecutar tests (cuando estén implementados)
-python -m unittest discover tests/
 ```
 
-## 🚀 Despliegue en Producción
-
-### Usando Gunicorn
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
-
-### Configuración Nginx (recomendado)
-
-```nginx
-server {
-    listen 80;
-    server_name tu-dominio.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-Ver más detalles en el [Manual Técnico](docs/manual_tecnico.md).
-
-## 📈 Mejoras Futuras
-
-- [ ] Sistema de notificaciones por email
-- [ ] Búsqueda y filtros avanzados
-- [ ] Exportar reportes a PDF/Excel
-- [ ] Sistema de archivos adjuntos
-- [ ] Chat en tiempo real con WebSockets
-- [ ] API RESTful con autenticación JWT
-- [ ] Dashboard con gráficos interactivos
-- [ ] Autenticación de dos factores (2FA)
-- [ ] Sistema de SLA
-- [ ] Base de conocimientos

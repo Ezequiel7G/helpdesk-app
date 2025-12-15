@@ -1,6 +1,7 @@
 # Manual de Usuario - Sistema Help Desk
 
 ## Índice
+
 1. [Introducción](#introducción)
 2. [Acceso al Sistema](#acceso-al-sistema)
 3. [Roles y Permisos](#roles-y-permisos)
@@ -14,6 +15,7 @@
 El Sistema de Help Desk es una aplicación web diseñada para gestionar solicitudes de soporte técnico de manera eficiente. Permite a los usuarios reportar problemas, hacer seguimiento de sus tickets y comunicarse con el equipo de soporte.
 
 ### Características Principales
+
 - ✅ Creación y gestión de tickets de soporte
 - ✅ Sistema de comentarios en tiempo real
 - ✅ Asignación de tickets a agentes
@@ -36,11 +38,13 @@ El Sistema de Help Desk es una aplicación web diseñada para gestionar solicitu
 ### Credenciales de Prueba
 
 Para propósitos de demostración:
+
 - **Administrador:** admin@example.com / admin123
 
 ### Cierre de Sesión
 
 Para cerrar sesión de forma segura:
+
 1. Hacer clic en su nombre en la esquina superior derecha
 2. Seleccionar "Logout" del menú desplegable
 
@@ -51,19 +55,24 @@ Para cerrar sesión de forma segura:
 El sistema cuenta con tres roles principales:
 
 ### 👤 USER (Usuario)
+
 **Permisos:**
+
 - ✅ Crear tickets de soporte
 - ✅ Ver sus propios tickets
 - ✅ Agregar comentarios a sus tickets
 - ✅ Ver el estado y progreso de sus solicitudes
 
 **No puede:**
+
 - ❌ Ver tickets de otros usuarios
 - ❌ Modificar el estado de tickets
 - ❌ Asignar tickets a agentes
 
 ### 🛠️ AGENT (Agente de Soporte)
+
 **Permisos:**
+
 - ✅ Todo lo que puede hacer un USER
 - ✅ Ver tickets asignados a ellos
 - ✅ Ver tickets sin asignar
@@ -72,11 +81,14 @@ El sistema cuenta con tres roles principales:
 - ✅ Agregar comentarios a cualquier ticket asignado
 
 **No puede:**
+
 - ❌ Administrar usuarios
 - ❌ Ver todos los tickets del sistema
 
 ### 👑 ADMIN (Administrador)
+
 **Permisos:**
+
 - ✅ Acceso completo al sistema
 - ✅ Ver todos los tickets
 - ✅ Modificar cualquier ticket
@@ -127,11 +139,13 @@ El sistema cuenta con tres roles principales:
 #### 4. Agregar Comentarios
 
 En la página de detalle del ticket:
+
 1. Desplazarse a la sección **"Comments"**
 2. Escribir su mensaje en el campo de texto
 3. Hacer clic en **"Add Comment"**
 
 **Uso recomendado:**
+
 - Proporcionar información adicional
 - Actualizar sobre el problema
 - Hacer preguntas al agente asignado
@@ -151,6 +165,7 @@ Los agentes tienen todas las funcionalidades de los usuarios, más:
 #### 2. Actualizar Estado de Tickets
 
 En la página de detalle del ticket:
+
 1. Localizar la sección **"Update Ticket"**
 2. Cambiar el **Estado:**
    - **OPEN:** Ticket nuevo o sin atender
@@ -200,12 +215,14 @@ Los administradores tienen acceso completo, incluyendo:
 El Dashboard muestra información resumida:
 
 ### Estadísticas Visibles
+
 - **Total Tickets:** Número total de tickets en su alcance
 - **OPEN:** Tickets nuevos sin atender
 - **IN_PROGRESS:** Tickets en proceso de resolución
 - **RESOLVED:** Tickets completados
 
 ### Acciones Rápidas
+
 - Botón para crear nuevo ticket
 - Enlace para ver todos los tickets
 - Información sobre su rol y permisos
@@ -215,14 +232,17 @@ El Dashboard muestra información resumida:
 ## Interpretación de Estados
 
 ### 🟡 OPEN (Abierto)
+
 - El ticket fue creado pero aún no ha sido asignado o atendido
 - Estado inicial de todos los tickets nuevos
 
 ### 🔵 IN_PROGRESS (En Progreso)
+
 - Un agente está trabajando activamente en el problema
 - Se espera una resolución pronto
 
 ### 🟢 RESOLVED (Resuelto)
+
 - El problema ha sido solucionado
 - El ticket está cerrado
 
@@ -231,75 +251,21 @@ El Dashboard muestra información resumida:
 ## Interpretación de Prioridades
 
 ### 🔴 HIGH (Alta)
+
 - Problema urgente que afecta significativamente el trabajo
 - Requiere atención inmediata
 - Ejemplo: sistema caído, pérdida de datos
 
 ### 🟡 MEDIUM (Media)
+
 - Problema importante pero no crítico
 - Se atenderá dentro del flujo normal de trabajo
 - Ejemplo: funcionalidad no funciona correctamente
 
 ### 🟢 LOW (Baja)
+
 - Consulta general o problema menor
 - Se atenderá cuando los recursos estén disponibles
 - Ejemplo: pregunta sobre cómo usar una función
 
 ---
-
-## Preguntas Frecuentes
-
-### ¿Puedo cambiar la prioridad de mi ticket después de crearlo?
-No, solo los agentes y administradores pueden modificar la prioridad. Si cree que la prioridad debe cambiarse, agregue un comentario explicando por qué.
-
-### ¿Cuánto tiempo tarda en responder un agente?
-Los tiempos de respuesta varían según la prioridad:
-- HIGH: 2-4 horas
-- MEDIUM: 1 día hábil
-- LOW: 2-3 días hábiles
-
-### ¿Puedo ver tickets de otros usuarios?
-No, por razones de privacidad, solo puede ver sus propios tickets. Los agentes ven tickets asignados a ellos, y los administradores tienen acceso completo.
-
-### ¿Qué hago si mi problema sigue sin resolverse?
-1. Agregue comentarios adicionales con más detalles
-2. Si el ticket está marcado como RESOLVED pero el problema persiste, cree un nuevo ticket
-3. Para problemas críticos, contacte directamente a un administrador
-
-### ¿Puedo eliminar un ticket?
-No, los tickets no se pueden eliminar para mantener un registro completo del historial de soporte. Si creó un ticket por error, agregue un comentario explicando la situación.
-
-### ¿Cómo recibo notificaciones sobre mis tickets?
-Actualmente, debe ingresar al sistema para verificar el estado de sus tickets. Las notificaciones automáticas pueden agregarse en futuras versiones.
-
----
-
-## Consejos para Crear Buenos Tickets
-
-1. **Sea específico en el título:** "Error 404 en página de reportes" es mejor que "Error en el sistema"
-
-2. **Proporcione detalles en la descripción:**
-   - ¿Qué estaba haciendo cuando ocurrió el problema?
-   - ¿Qué esperaba que sucediera?
-   - ¿Qué sucedió en realidad?
-   - ¿Puede reproducir el problema?
-
-3. **Seleccione la prioridad correcta:** Reserve HIGH solo para problemas verdaderamente urgentes
-
-4. **Agregue comentarios con información adicional:** Si recuerda más detalles después de crear el ticket, agréguelos
-
-5. **Responda a los agentes oportunamente:** Cuando un agente solicite más información, responda lo antes posible
-
----
-
-## Soporte Adicional
-
-Si tiene problemas técnicos con la aplicación o necesita ayuda adicional:
-- Contacte al administrador del sistema
-- Revise el Manual Técnico para detalles sobre la instalación y configuración
-
----
-
-**Versión del Manual:** 1.0  
-**Fecha:** Diciembre 2024  
-**Sistema:** Help Desk v1.0
