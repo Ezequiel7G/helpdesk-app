@@ -515,7 +515,7 @@ Se implementó un sistema de búsqueda que permite a los usuarios encontrar tick
 - Parámetros seguros para prevenir SQL injection
 - Compatible con los 3 roles del sistema
 
-![Buscador de Tickets](docs/screenshots/ticket_list_search.png)
+![Buscador de Tickets](/docs/screenshots/ticket_list_search.png)
 
 ```
 
