@@ -1,67 +1,104 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>📋 Support Tickets</h3>
-        <a href="{{ url_for('ticket_new') }}" class="btn btn-success">
-            ➕ New Ticket
-        </a>
-    </div>
-    
-    {% if tickets %}
-    <div class="card">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Priority</th>
-                            <th>Created By</th>
-                            <th>Assigned To</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for t in tickets %}
-                        <tr style="cursor: pointer;" onclick="window.location='{{ url_for('ticket_detail', ticket_id=t.id) }}'">
-                            <td><strong>{{ t.id }}</strong></td>
-                            <td>{{ t.title }}</td>
-                            <td>
-                                {% if t.status == 'OPEN' %}
-                                <span class="badge bg-warning text-dark">{{ t.status }}</span>
-                                {% elif t.status == 'IN_PROGRESS' %}
-                                <span class="badge bg-info">{{ t.status }}</span>
-                                {% else %}
-                                <span class="badge bg-success">{{ t.status }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if t.priority == 'HIGH' %}
-                                <span class="badge bg-danger">{{ t.priority }}</span>
-                                {% elif t.priority == 'MEDIUM' %}
-                                <span class="badge bg-warning text-dark">{{ t.priority }}</span>
-                                {% else %}
-                                <span class="badge bg-secondary">{{ t.priority }}</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ t.created_by_name }}</td>
-                            <td>{{ t.assigned_to_name or '<em>Unassigned</em>' }}</td>
-                            <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>📋 Support Tickets</h3>
+    <a href="{{ url_for('ticket_new') }}" class="btn btn-success">
+      ➕ New Ticket
+    </a>
+  </div>
+
+  <!-- BUSCADOR (MEJORA ADICIONAL) -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="get" action="{{ url_for('tickets_list') }}" class="row g-3">
+        <div class="col-md-10">
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="🔍 Buscar tickets por título o descripción..."
+            value="{{ search_query or '' }}"
+          />
         </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+      </form>
+      {% if search_query %}
+      <div class="mt-2">
+        <small class="text-muted">
+          Resultados para: <strong>"{{ search_query }}"</strong>
+          <a href="{{ url_for('tickets_list') }}" class="ms-2"
+            >Limpiar búsqueda</a
+          >
+        </small>
+      </div>
+      {% endif %}
     </div>
+  </div>
+
+  {% if tickets %}
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Created By</th>
+              <th>Assigned To</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in tickets %}
+            <tr
+              style="cursor: pointer"
+              onclick="window.location='{{ url_for('ticket_detail', ticket_id=t.id) }}'"
+            >
+              <td><strong>{{ t.id }}</strong></td>
+              <td>{{ t.title }}</td>
+              <td>
+                {% if t.status == 'OPEN' %}
+                <span class="badge bg-warning text-dark">{{ t.status }}</span>
+                {% elif t.status == 'IN_PROGRESS' %}
+                <span class="badge bg-info">{{ t.status }}</span>
+                {% else %}
+                <span class="badge bg-success">{{ t.status }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if t.priority == 'HIGH' %}
+                <span class="badge bg-danger">{{ t.priority }}</span>
+                {% elif t.priority == 'MEDIUM' %}
+                <span class="badge bg-warning text-dark">{{ t.priority }}</span>
+                {% else %}
+                <span class="badge bg-secondary">{{ t.priority }}</span>
+                {% endif %}
+              </td>
+              <td>{{ t.created_by_name }}</td>
+              <td>{{ t.assigned_to_name or '<em>Unassigned</em>' }}</td>
+              <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    {% if search_query %}
+    <strong>No se encontraron tickets</strong> que coincidan con "{{
+    search_query }}".
+    <a href="{{ url_for('tickets_list') }}">Ver todos los tickets</a>
     {% else %}
-    <div class="alert alert-info">
-        <strong>No tickets found.</strong> Create your first support ticket!
-    </div>
-    {% endif %}
+    <strong>No tickets found.</strong> Create your first support ticket! {%
+    endif %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

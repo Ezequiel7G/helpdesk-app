@@ -8,6 +8,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # ============= DATABASE CONNECTION =============
+
+
 def get_db_connection():
     return pymysql.connect(
         host=app.config["DB_HOST"],
@@ -18,6 +20,8 @@ def get_db_connection():
     )
 
 # ============= DECORATORS =============
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -26,6 +30,7 @@ def login_required(f):
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
+
 
 def role_required(*roles):
     def decorator(f):
@@ -40,24 +45,26 @@ def role_required(*roles):
 
 # ============= ROUTES =============
 
+
 @app.route("/")
 def index():
     if "user_id" in session:
         return redirect(url_for("dashboard"))
     return redirect(url_for("login"))
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        
+
         conn = get_db_connection()
         with conn.cursor() as cursor:
             cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
         conn.close()
-        
+
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = user["id"]
             session["user_name"] = user["name"]
@@ -66,8 +73,9 @@ def login():
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid email or password.", "danger")
-    
+
     return render_template("login.html")
+
 
 @app.route("/logout")
 @login_required
@@ -76,81 +84,124 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("login"))
 
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
     user_role = session.get("user_role")
     user_id = session.get("user_id")
-    
+
     conn = get_db_connection()
     with conn.cursor() as cursor:
         # Estadísticas básicas
         if user_role == "ADMIN":
             cursor.execute("SELECT COUNT(*) as total FROM tickets")
             total_tickets = cursor.fetchone()["total"]
-            
-            cursor.execute("SELECT status, COUNT(*) as count FROM tickets GROUP BY status")
+
+            cursor.execute(
+                "SELECT status, COUNT(*) as count FROM tickets GROUP BY status")
             status_counts = cursor.fetchall()
         elif user_role == "AGENT":
-            cursor.execute("SELECT COUNT(*) as total FROM tickets WHERE assigned_to = %s OR assigned_to IS NULL", (user_id,))
+            cursor.execute(
+                "SELECT COUNT(*) as total FROM tickets WHERE assigned_to = %s OR assigned_to IS NULL", (user_id,))
             total_tickets = cursor.fetchone()["total"]
-            
-            cursor.execute("SELECT status, COUNT(*) as count FROM tickets WHERE assigned_to = %s OR assigned_to IS NULL GROUP BY status", (user_id,))
+
+            cursor.execute(
+                "SELECT status, COUNT(*) as count FROM tickets WHERE assigned_to = %s OR assigned_to IS NULL GROUP BY status", (user_id,))
             status_counts = cursor.fetchall()
         else:  # USER
-            cursor.execute("SELECT COUNT(*) as total FROM tickets WHERE created_by = %s", (user_id,))
+            cursor.execute(
+                "SELECT COUNT(*) as total FROM tickets WHERE created_by = %s", (user_id,))
             total_tickets = cursor.fetchone()["total"]
-            
-            cursor.execute("SELECT status, COUNT(*) as count FROM tickets WHERE created_by = %s GROUP BY status", (user_id,))
+
+            cursor.execute(
+                "SELECT status, COUNT(*) as count FROM tickets WHERE created_by = %s GROUP BY status", (user_id,))
             status_counts = cursor.fetchall()
-    
+
     conn.close()
-    
-    return render_template("dashboard.html", 
-                         total_tickets=total_tickets,
-                         status_counts=status_counts)
+
+    return render_template("dashboard.html",
+                           total_tickets=total_tickets,
+                           status_counts=status_counts)
 
 # ============= TICKETS ROUTES =============
+
 
 @app.route("/tickets")
 @login_required
 def tickets_list():
     user_id = session["user_id"]
     user_role = session["user_role"]
-    
+
+    # Obtener el término de búsqueda (si existe)
+    search_query = request.args.get('search', '')
+
     conn = get_db_connection()
     with conn.cursor() as cursor:
         if user_role == "ADMIN":
-            cursor.execute("""
-                SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
-                FROM tickets t
-                JOIN users u ON t.created_by = u.id
-                LEFT JOIN users a ON t.assigned_to = a.id
-                ORDER BY t.created_at DESC
-            """)
+            if search_query:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    WHERE t.title LIKE %s OR t.description LIKE %s
+                    ORDER BY t.created_at DESC
+                """, (f'%{search_query}%', f'%{search_query}%'))
+            else:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    ORDER BY t.created_at DESC
+                """)
         elif user_role == "AGENT":
-            cursor.execute("""
-                SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
-                FROM tickets t
-                JOIN users u ON t.created_by = u.id
-                LEFT JOIN users a ON t.assigned_to = a.id
-                WHERE t.assigned_to = %s OR t.assigned_to IS NULL
-                ORDER BY t.created_at DESC
-            """, (user_id,))
+            if search_query:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    WHERE (t.assigned_to = %s OR t.assigned_to IS NULL)
+                    AND (t.title LIKE %s OR t.description LIKE %s)
+                    ORDER BY t.created_at DESC
+                """, (user_id, f'%{search_query}%', f'%{search_query}%'))
+            else:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    WHERE t.assigned_to = %s OR t.assigned_to IS NULL
+                    ORDER BY t.created_at DESC
+                """, (user_id,))
         else:  # USER
-            cursor.execute("""
-                SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
-                FROM tickets t
-                JOIN users u ON t.created_by = u.id
-                LEFT JOIN users a ON t.assigned_to = a.id
-                WHERE t.created_by = %s
-                ORDER BY t.created_at DESC
-            """, (user_id,))
-        
+            if search_query:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    WHERE t.created_by = %s
+                    AND (t.title LIKE %s OR t.description LIKE %s)
+                    ORDER BY t.created_at DESC
+                """, (user_id, f'%{search_query}%', f'%{search_query}%'))
+            else:
+                cursor.execute("""
+                    SELECT t.*, u.name AS created_by_name, a.name AS assigned_to_name
+                    FROM tickets t
+                    JOIN users u ON t.created_by = u.id
+                    LEFT JOIN users a ON t.assigned_to = a.id
+                    WHERE t.created_by = %s
+                    ORDER BY t.created_at DESC
+                """, (user_id,))
+
         tickets = cursor.fetchall()
     conn.close()
-    
-    return render_template("tickets_list.html", tickets=tickets)
+
+    return render_template("tickets_list.html", tickets=tickets, search_query=search_query)
+
 
 @app.route("/tickets/new", methods=["GET", "POST"])
 @login_required
@@ -160,11 +211,11 @@ def ticket_new():
         description = request.form.get("description")
         priority = request.form.get("priority")
         created_by = session["user_id"]
-        
+
         if not title or not description:
             flash("Title and description are required.", "warning")
             return redirect(url_for("ticket_new"))
-        
+
         conn = get_db_connection()
         with conn.cursor() as cursor:
             cursor.execute("""
@@ -173,11 +224,12 @@ def ticket_new():
             """, (title, description, priority, created_by))
             conn.commit()
         conn.close()
-        
+
         flash("Ticket created successfully.", "success")
         return redirect(url_for("tickets_list"))
-    
+
     return render_template("ticket_new.html")
+
 
 @app.route("/tickets/<int:ticket_id>", methods=["GET", "POST"])
 @login_required
@@ -192,7 +244,7 @@ def ticket_detail(ticket_id):
             WHERE t.id = %s
         """, (ticket_id,))
         ticket = cursor.fetchone()
-        
+
         cursor.execute("""
             SELECT c.*, u.name AS user_name
             FROM ticket_comments c
@@ -201,19 +253,21 @@ def ticket_detail(ticket_id):
             ORDER BY c.created_at ASC
         """, (ticket_id,))
         comments = cursor.fetchall()
-        
-        cursor.execute("SELECT id, name FROM users WHERE role IN ('ADMIN', 'AGENT')")
+
+        cursor.execute(
+            "SELECT id, name FROM users WHERE role IN ('ADMIN', 'AGENT')")
         agents = cursor.fetchall()
     conn.close()
-    
+
     if not ticket:
         flash("Ticket not found.", "danger")
         return redirect(url_for("tickets_list"))
-    
+
     return render_template("ticket_detail.html",
-                         ticket=ticket,
-                         comments=comments,
-                         agents=agents)
+                           ticket=ticket,
+                           comments=comments,
+                           agents=agents)
+
 
 @app.route("/tickets/<int:ticket_id>/update", methods=["POST"])
 @login_required
@@ -222,10 +276,10 @@ def ticket_update(ticket_id):
     if user_role not in ["ADMIN", "AGENT"]:
         flash("You are not allowed to update tickets.", "danger")
         return redirect(url_for("ticket_detail", ticket_id=ticket_id))
-    
+
     status = request.form.get("status")
     assigned_to = request.form.get("assigned_to") or None
-    
+
     conn = get_db_connection()
     with conn.cursor() as cursor:
         cursor.execute("""
@@ -235,20 +289,21 @@ def ticket_update(ticket_id):
         """, (status, assigned_to, ticket_id))
         conn.commit()
     conn.close()
-    
+
     flash("Ticket updated.", "success")
     return redirect(url_for("ticket_detail", ticket_id=ticket_id))
+
 
 @app.route("/tickets/<int:ticket_id>/comments", methods=["POST"])
 @login_required
 def comment_add(ticket_id):
     comment_text = request.form.get("comment")
     user_id = session["user_id"]
-    
+
     if not comment_text:
         flash("Comment cannot be empty.", "warning")
         return redirect(url_for("ticket_detail", ticket_id=ticket_id))
-    
+
     conn = get_db_connection()
     with conn.cursor() as cursor:
         cursor.execute("""
@@ -257,11 +312,12 @@ def comment_add(ticket_id):
         """, (ticket_id, user_id, comment_text))
         conn.commit()
     conn.close()
-    
+
     flash("Comment added.", "success")
     return redirect(url_for("ticket_detail", ticket_id=ticket_id))
 
 # ============= USERS ROUTES (ADMIN ONLY) =============
+
 
 @app.route("/users")
 @login_required
@@ -269,11 +325,13 @@ def comment_add(ticket_id):
 def users_list():
     conn = get_db_connection()
     with conn.cursor() as cursor:
-        cursor.execute("SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC")
+        cursor.execute(
+            "SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC")
         users = cursor.fetchall()
     conn.close()
-    
+
     return render_template("users_list.html", users=users)
+
 
 @app.route("/users/<int:user_id>/role", methods=["POST"])
 @login_required
@@ -283,15 +341,17 @@ def user_change_role(user_id):
     if new_role not in ["ADMIN", "AGENT", "USER"]:
         flash("Invalid role.", "danger")
         return redirect(url_for("users_list"))
-    
+
     conn = get_db_connection()
     with conn.cursor() as cursor:
-        cursor.execute("UPDATE users SET role = %s WHERE id = %s", (new_role, user_id))
+        cursor.execute("UPDATE users SET role = %s WHERE id = %s",
+                       (new_role, user_id))
         conn.commit()
     conn.close()
-    
+
     flash("Role updated.", "success")
     return redirect(url_for("users_list"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
